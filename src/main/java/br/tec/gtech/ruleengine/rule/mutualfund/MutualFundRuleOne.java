@@ -9,28 +9,14 @@ import br.tec.gtech.ruleengine.instrument.Instrument;
 import br.tec.gtech.ruleengine.instrument.InstrumentType;
 import br.tec.gtech.ruleengine.rule.InstrumentRule;
 import br.tec.gtech.ruleengine.rule.RuleProcessResult;
+import br.tec.gtech.ruleengine.rule.error.RuleValidationError;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class MutualFundRuleOne extends InstrumentRule {
 
-	@Override
-	public RuleProcessResult apply(Instrument instrument) {
-		Random random = new Random();
-		IntStream limitedIntStreamWithinARange = random.ints(10);
-		boolean ruleApproved = limitedIntStreamWithinARange.findFirst().getAsInt() % 2 == 0;
-		
-		log.info("MutualFund ID: " + instrument.getId());
-		
-		if(ruleApproved && hasSuccessor()){
-			log.info("Rule approved and has successor!");
-			return successor.apply(instrument);
-		}
-		
-		log.info("Returning MutualFundRuleProcessResult!");
-		return new MutualFundRuleProcessResult();
-	}
+	private static final String MUTUAL_FUND_RULE_ONE = "MutualFundRuleOne";
 
 	@Override
 	public InstrumentType getInstrumentType() {
@@ -39,12 +25,24 @@ public class MutualFundRuleOne extends InstrumentRule {
 
 	@Override
 	public String getName() {
-		return "MutualFundRuleOne";
+		return MUTUAL_FUND_RULE_ONE;
 	}
 
 	@Override
 	public String toString() {
 		return "MutualFundRuleOne [getName()=" + getName() + "]";
+	}
+
+	@Override
+	public void doApply(Instrument instrument, RuleProcessResult ruleProcessResult) {
+		Random random = new Random();
+		IntStream limitedIntStreamWithinARange = random.ints(10);
+		boolean ruleNotApproved = limitedIntStreamWithinARange.findFirst().getAsInt() % 2 == 0;
+		
+		if(ruleNotApproved) {
+			ruleProcessResult.add(new RuleValidationError(MUTUAL_FUND_RULE_ONE,"Validation failed!"));
+			
+		}
 	}
 
 }

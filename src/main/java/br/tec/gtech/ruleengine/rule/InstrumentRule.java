@@ -12,12 +12,22 @@ public abstract class InstrumentRule {
 		this.successor = successor;
 	}
 	
-	public boolean hasSuccessor() {
-		return this.successor != null;
+	private RuleProcessResult applyNextRuleOn(Instrument instrument, RuleProcessResult ruleProcessResult) {
+		if(this.successor != null) {
+			return successor.apply(instrument, ruleProcessResult);
+		}
+		else {
+			return ruleProcessResult;
+		}
 	}
 
-	public abstract RuleProcessResult apply(Instrument instrument);
+	public RuleProcessResult apply(Instrument instrument, RuleProcessResult ruleProcessResult) {
+		doApply(instrument, ruleProcessResult);
+		return applyNextRuleOn(instrument, ruleProcessResult);
+	}
+	
+	public abstract void doApply(Instrument instrument, RuleProcessResult ruleProcessResult);
 	public abstract String getName();
 	public abstract InstrumentType getInstrumentType();
 	
-}
+};

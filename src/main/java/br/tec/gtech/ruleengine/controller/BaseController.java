@@ -7,6 +7,8 @@ import br.tec.gtech.ruleengine.instrument.InstrumentType;
 import br.tec.gtech.ruleengine.instrument.MutualFund;
 import br.tec.gtech.ruleengine.rule.InstrumentRule;
 import br.tec.gtech.ruleengine.rule.RuleProcessResult;
+import br.tec.gtech.ruleengine.rule.error.RuleValidationError;
+import br.tec.gtech.ruleengine.rule.mutualfund.MutualFundRuleProcessResult;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +23,13 @@ public class BaseController {
 	public String demo() {
 		MutualFund mutualFund = new MutualFund();
 		log.info("MutualFund ID: " + mutualFund.getId());
-		RuleProcessResult ruleProcessResult = chainRules.get(mutualFund.getTtype()).apply(mutualFund);
+		MutualFundRuleProcessResult mfrpr;
+		
+		RuleProcessResult ruleProcessResult = chainRules.get(mutualFund.getTtype()).apply(mutualFund, new MutualFundRuleProcessResult());
+		for (RuleValidationError ruleValidationError : ruleProcessResult.getValidationErrors()) {
+			log.info("RuleValidationError: "+ ruleValidationError);
+		}
+		
 		log.info("RuleProcessResult Class: "+ ruleProcessResult.getName());
 		return ("Done!");
 	}

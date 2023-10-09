@@ -8,28 +8,14 @@ import br.tec.gtech.ruleengine.instrument.Instrument;
 import br.tec.gtech.ruleengine.instrument.InstrumentType;
 import br.tec.gtech.ruleengine.rule.InstrumentRule;
 import br.tec.gtech.ruleengine.rule.RuleProcessResult;
+import br.tec.gtech.ruleengine.rule.error.RuleValidationError;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class OrderRuleTwo extends InstrumentRule {
 
-	@Override
-	public RuleProcessResult apply(Instrument instrument) {
-		Random random = new Random();
-		IntStream limitedIntStreamWithinARange = random.ints(10);
-		boolean ruleApproved = limitedIntStreamWithinARange.findFirst().getAsInt() % 2 == 0;
-		
-		log.info("Order ID:", instrument.getId());
-		
-		if(ruleApproved && hasSuccessor()){
-			log.debug("Rule approved and has successor!");
-			return successor.apply(instrument);
-		}
-		
-		log.debug("Returning OrderRuleProcessResult!");
-		return new OrderRuleProcessResult();
-	}
+	private static final String ORDER_RULE_TWO = "OrderRuleTwo";
 
 	@Override
 	public InstrumentType getInstrumentType() {
@@ -38,12 +24,24 @@ public class OrderRuleTwo extends InstrumentRule {
 
 	@Override
 	public String getName() {
-		return "OrderRuleTwo";
+		return ORDER_RULE_TWO;
 	}
 
 	@Override
 	public String toString() {
 		return "OrderRuleTwo [getName()=" + getName() + "]";
+	}
+
+	@Override
+	public void doApply(Instrument instrument, RuleProcessResult ruleProcessResult) {
+		Random random = new Random();
+		IntStream limitedIntStreamWithinARange = random.ints(10);
+		boolean ruleNotApproved = limitedIntStreamWithinARange.findFirst().getAsInt() % 2 == 0;
+		
+		if(ruleNotApproved) {
+			ruleProcessResult.add(new RuleValidationError(ORDER_RULE_TWO,"Validation failed!"));
+		}
+		
 	}
 
 }
