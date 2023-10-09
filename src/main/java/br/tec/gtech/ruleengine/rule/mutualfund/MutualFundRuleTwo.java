@@ -35,11 +35,14 @@ public class MutualFundRuleTwo extends InstrumentRule {
 
 	@Override
 	public void doApply(Instrument instrument, RuleProcessResult ruleProcessResult) {
+		log.info("MutualFund ID: " + instrument.getId());
+		
 		Random random = new Random();
 		IntStream limitedIntStreamWithinARange = random.ints(10);
 		boolean ruleNotApproved = limitedIntStreamWithinARange.findFirst().getAsInt() % 2 == 0;
 		
 		if(ruleNotApproved) {
+			log.info("Rule not approved!");
 			ruleProcessResult.add(new RuleValidationError(MUTUAL_FUND_RULE_TWO,"Validation failed!"));
 		}
 		

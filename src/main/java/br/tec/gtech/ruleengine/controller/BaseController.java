@@ -23,7 +23,6 @@ public class BaseController {
 	public String demo() {
 		MutualFund mutualFund = new MutualFund();
 		log.info("MutualFund ID: " + mutualFund.getId());
-		MutualFundRuleProcessResult mfrpr;
 		
 		RuleProcessResult ruleProcessResult = chainRules.get(mutualFund.getTtype()).apply(mutualFund, new MutualFundRuleProcessResult());
 		for (RuleValidationError ruleValidationError : ruleProcessResult.getValidationErrors()) {
